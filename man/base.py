@@ -16,6 +16,8 @@ class BaseMan():
         return self.__color
     def kill(self):
         self.__alive = False
+    def is_alive(self,):
+        return self.__alive 
     def isLegal(self,pos):
         if (pos[0]>conf_dict['max_x']) or (pos[0]<conf_dict['min_x']):
             return False
