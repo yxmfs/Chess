@@ -2,13 +2,20 @@
 from board.base import conf_reader
 conf_dict = conf_reader('./data/conf.ini','num')
 class BaseMan():
-    def __init__(self,pos,color):
+    def __init__(self,pos,color,name):
         self.pos = pos
-        self.alive = True
+        self.__alive = True
+        self.__name = name
         if color in ('b','r'):
-            self.color = color
+            self.__color = color
         else:
             raise('color except')
+    def get_name(self,):
+        return self.__name
+    def get_color(self,):
+        return self.__color
+    def kill(self):
+        self.__alive = False
     def isLegal(self,pos):
         if (pos[0]>conf_dict['max_x']) or (pos[0]<conf_dict['min_x']):
             return False
@@ -35,20 +42,17 @@ class BaseMan():
         if self.isLegal([x,y]):
             nextList.append([x,y])
         return nextList
-    def kill(self):
-        self.alive = False
- 
+
 class BossMan(BaseMan):
     def __init__(self,pos,color):
-        BaseMan.__init__(self,pos,color)
-        self.name = 'boss'
+        BaseMan.__init__(self,pos,color,'boss')
     def isLegal(self,pos):
         min_x = 3
         max_x = 5
-        if self.color == 'r':
+        if self.get_color() == 'r':
             min_y = 0
             max_y = 2
-        if self.color == 'b':
+        if self.get_color() == 'b':
             min_y = 7
             max_y = 9
  
@@ -61,8 +65,7 @@ class BossMan(BaseMan):
  
 class CarMan(BaseMan):
     def __init__(self,pos,color):
-        BaseMan.__init__(self,pos,color)
-        self.name = 'car'
+        BaseMan.__init__(self,pos,color,'car')
  
 if __name__ == '__main__':
     import sys
