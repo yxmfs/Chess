@@ -1,5 +1,5 @@
 # coding=utf-8
-from board.base import conf_reader
+from board.fun import conf_reader
 conf_dict = conf_reader('./data/conf.ini','num')
 class BaseMan():
     def __init__(self,pos,color,name):
