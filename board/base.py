@@ -52,13 +52,14 @@ class BaseBoard():
         self.replace_data('4',6, ('soldier','b',2))
         self.replace_data('6',6, ('soldier','b',3))
         self.replace_data('8',6, ('soldier','b',4))
-    def get_all_pos(self,name):
+    def get_all_pos(self,name,color):
         result = []
         df = self.get_status()
         for x in df.columns:
             for y in range(len(df[x])):
                 if df[x][y][0] == name:
-                    result.append([(x,y),df[x][y][1]])
+                    if df[x][y][1] == color:
+                        result.append([(x,y),df[x][y][1],df[x][y][2]])  #list[pos,color,num]
         return result
     def get_all_name(self,num):
         result = []

@@ -3,7 +3,7 @@ from board.fun import conf_reader
 conf_dict = conf_reader('./data/conf.ini','num')
 class BaseMan():
     def __init__(self,pos,color,name):
-        self.pos = pos
+        self.pos = (int(pos[0]),int(pos[1]))
         self.__alive = True
         self.__name = name
         if color in ('b','r'):
@@ -161,6 +161,10 @@ class SoldierMan(BaseMan):
                 if self.isLegal([x,y]):
                     nextList.append([x,y])
         return nextList
+class CannonMan(BaseMan):
+    def __init__(self,pos,color):
+        BaseMan.__init__(self,pos,color,'cannon')
+
 if __name__ == '__main__':
     import sys
     sys.path.append('../')
