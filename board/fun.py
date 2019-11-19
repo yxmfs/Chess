@@ -50,4 +50,21 @@ def save_sql_df(df,config_file_path, section):
     conf_sql = read_sql_conf(config_file_path, section)
     con = ce(conf_sql[0])
     df.to_sql(conf_sql[1], con=con, if_exists='replace')# flavor=conf_sql[0].split('+')[0])
+class switch(object):
+    def __init__(self, value):
+        self.value = value
+        self.fall = False
+
+    def __iter__(self):
+        yield self.match
+        raise StopIteration
+
+    def match(self, *args):
+        if self.fall or not args:
+            return True
+        elif self.value in args:
+            self.fall = True
+            return True
+        else:
+            return False
 

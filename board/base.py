@@ -1,5 +1,6 @@
 import pandas as pd
-from .fun import conf_reader
+from board.fun import conf_reader
+
 class BaseBoard():
     def __init__(self,):
         self.__conf_dict = conf_reader('./data/conf.ini','num')
@@ -11,8 +12,8 @@ class BaseBoard():
         self.__status = pd.DataFrame(temp_dict)
         self.__sort_dict = {0:'boss',1:'car',2:'horse'}
     def get_status(self,):
-        print(self.__status.shape)
-        return self.__status
+        #print(self.__status.shape)
+        return self.__status.copy()
     def find_data(self,x,y):
         return self.__status[str(x)][y]
     def replace_data(self,x,y,data):
@@ -51,7 +52,21 @@ class BaseBoard():
         self.replace_data('4',6, ('soldier','b',2))
         self.replace_data('6',6, ('soldier','b',3))
         self.replace_data('8',6, ('soldier','b',4))
-
+    def get_all_pos(self,name):
+        result = []
+        df = self.get_status()
+        for x in df.columns:
+            for y in range(len(df[x])):
+                if df[x][y][0] == name:
+                    result.append([(x,y),df[x][y][1]])
+        return result
+    def get_all_name(self,num):
+        result = []
+        df = self.get_status()
+        f = lambda x: x[num]
+        for key in df.columns:
+            result.extend(list(df[key].apply(f)))
+        return set(result)
 if __name__ == '__main__':
     print(conf_reader('./data/conf.ini','num'))
     bb = BaseBoard()
