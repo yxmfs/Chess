@@ -62,6 +62,14 @@ class BaseMan():
         if self.isLegal([x,y]):
             nextList.append([x,y])
         return nextList
+    def get_col_index(self,input_df):
+        df = input_df.copy()
+        tmp = df[df.index!=int(self.pos[1])]
+        list_colum = list(tmp[str(self.pos[0])])
+        tmp = df.drop(str(self.pos[0]),axis=1)
+        list_index = list(tmp.loc[int(self.pos[1])])
+        return list_index,list_colum
+
 
 class BossMan(BaseMan):
     def __init__(self,pos,color):
@@ -86,8 +94,9 @@ class BossMan(BaseMan):
 class CarMan(BaseMan):
     def __init__(self,pos,color):
         BaseMan.__init__(self,pos,color,'car')
-    def nextsteps(self):
+    def nextsteps(self,input_df):
         nextList = []
+        list_index,list_colum = self.get_col_index(input_df)
         x = self.pos[0] + 1
         y = self.pos[1]
         if self.isLegal([x,y]):

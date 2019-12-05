@@ -94,7 +94,7 @@ class Game():
         if target_pos in select_man.nextsteps():
             target_data = self.board.find_data(target_pos[0],target_pos[1])
             if self.isMan(target_data):  #target place has a man
-                if target_data[1] != select_data[1]  #select and target man has different color
+                if target_data[1] != select_data[1]:  #select and target man has different color
                     target_man = self.get_select_man(target_data)
                     target_man.kill()
                 else:
