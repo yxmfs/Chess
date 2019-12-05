@@ -1,11 +1,11 @@
 # coding=utf-8
 from board.fun import conf_reader
-conf_dict = conf_reader('./data/conf.ini','num')
 class BaseMan():
     def __init__(self,pos,color,name):
         self.pos = (int(pos[0]),int(pos[1]))
         self.__alive = True
         self.__name = name
+        self.conf_dict = conf_reader('./data/conf.ini','num')
         if color in ('b','r'):
             self.__color = color
         else:
@@ -19,22 +19,22 @@ class BaseMan():
     def is_alive(self,):
         return self.__alive 
     def isLegal(self,pos):
-        if (pos[0]>conf_dict['max_x']) or (pos[0]<conf_dict['min_x']):
+        if (pos[0]>self.conf_dict['max_x']) or (pos[0]<self.conf_dict['min_x']):
             return False
-        elif (pos[1]>conf_dict['max_y']) or (pos[1]<conf_dict['min_y']):
+        elif (pos[1]>self.conf_dict['max_y']) or (pos[1]<self.conf_dict['min_y']):
             return False
         else:
             return True
     def isOut(self,pos):
-        min_x = conf_dict['min_x']
-        max_x = conf_dict['max_x']
-        tmp = int(conf_dict['max_y']/2)
+        min_x = self.conf_dict['min_x']
+        max_x = self.conf_dict['max_x']
+        tmp = int(self.conf_dict['max_y']/2)
         if self.get_color() == 'r':
-            min_y = conf_dict['min_y']
+            min_y = self.conf_dict['min_y']
             max_y = tmp
         if self.get_color() == 'b':
             min_y = tmp+1
-            max_y = conf_dict['max_y']
+            max_y = self.conf_dict['max_y']
 
         if (pos[0]>max_x) or (pos[0]<min_x):
             return True
@@ -69,6 +69,23 @@ class BaseMan():
         tmp = df.drop(str(self.pos[0]),axis=1)
         list_index = list(tmp.loc[int(self.pos[1])])
         return list_index,list_colum
+    def pos_utl_man(self,num,input_list,input_df,axis=0):
+        res_list = []
+        if (0 == axis):
+            for key in input_list:
+                if ('no' != input_df[str(key)][num][0]):
+                    break
+                else:
+                    res_list.append((num,key))
+        elif (1 == axis):
+            for key in input_list:
+                if ('no' != input_df[str(num)][key][0]):
+                    break
+                else:
+                    res_list.append((num,key))
+        else:
+            raise KeyError(axis)
+        return res_list
 
 
 class BossMan(BaseMan):
@@ -96,23 +113,26 @@ class CarMan(BaseMan):
         BaseMan.__init__(self,pos,color,'car')
     def nextsteps(self,input_df):
         nextList = []
-        list_index,list_colum = self.get_col_index(input_df)
-        x = self.pos[0] + 1
-        y = self.pos[1]
-        if self.isLegal([x,y]):
-            nextList.append([x,y])
-        x = self.pos[0]
-        y = self.pos[1] + 1
-        if self.isLegal([x,y]):
-            nextList.append([x,y])
-        x = self.pos[0] - 1
-        y = self.pos[1]
-        if self.isLegal([x,y]):
-            nextList.append([x,y])
-        x = self.pos[0]
-        y = self.pos[1] - 1
-        if self.isLegal([x,y]):
-            nextList.append([x,y])
+        #list_index,list_colum = self.get_col_index(input_df)
+        df = input_df.copy()
+        input_list = list(range(0,self.pos[0]))
+        input_list.reverse()
+        list_pos = self.pos_utl_man(int(self.pos[1]),input_list,df,axis=0)
+        nextList.extend(list_pos)
+
+        input_list = list(range(self.pos[0]+1,self.conf_dict['max_x']+1))
+        list_pos = self.pos_utl_man(int(self.pos[1]),input_list,df,axis=0)
+        nextList.extend(list_pos)
+
+        input_list = list(range(0,self.pos[1]))
+        input_list.reverse()
+        list_pos = self.pos_utl_man(int(self.pos[0]),input_list,df,axis=1)
+        nextList.extend(list_pos)
+
+        input_list = list(range(self.pos[1]+1,self.conf_dict['max_y']+1))
+        list_pos = self.pos_utl_man(int(self.pos[0]),input_list,df,axis=1)
+        nextList.extend(list_pos)
+
         return nextList
 class HorseMan(BaseMan):
     def __init__(self,pos,color):
