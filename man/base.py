@@ -69,24 +69,6 @@ class BaseMan():
         tmp = df.drop(str(self.pos[0]),axis=1)
         list_index = list(tmp.loc[int(self.pos[1])])
         return list_index,list_colum
-    def pos_utl_man(self,num,input_list,input_df,axis=0):
-        res_list = []
-        if (0 == axis):
-            for key in input_list:
-                if ('no' != input_df[str(key)][num][0]):
-                    break
-                else:
-                    res_list.append((num,key))
-        elif (1 == axis):
-            for key in input_list:
-                if ('no' != input_df[str(num)][key][0]):
-                    break
-                else:
-                    res_list.append((num,key))
-        else:
-            raise KeyError(axis)
-        return res_list
-
 
 class BossMan(BaseMan):
     def __init__(self,pos,color):
@@ -111,6 +93,27 @@ class BossMan(BaseMan):
 class CarMan(BaseMan):
     def __init__(self,pos,color):
         BaseMan.__init__(self,pos,color,'car')
+    def pos_utl_man(self,num,input_list,input_df,axis=0):
+        res_list = []
+        if (0 == axis):
+            for key in input_list:
+                if ('no' != input_df[str(key)][num][0]):
+                    if (self.get_color() != input_df[str(key)][num][1]):
+                        res_list.append((key,num))
+                    break
+                else:
+                    res_list.append((key,num))
+        elif (1 == axis):
+            for key in input_list:
+                if ('no' != input_df[str(num)][key][0]):
+                    if (self.get_color() != input_df[str(num)][key][1]):
+                        res_list.append((num,key))
+                    break
+                else:
+                    res_list.append((num,key))
+        else:
+            raise KeyError(axis)
+        return res_list
     def nextsteps(self,input_df):
         nextList = []
         #list_index,list_colum = self.get_col_index(input_df)
@@ -193,6 +196,57 @@ class SoldierMan(BaseMan):
 class CannonMan(BaseMan):
     def __init__(self,pos,color):
         BaseMan.__init__(self,pos,color,'cannon')
+    def pos_utl_man(self,num,input_list,input_df,axis=0):
+        res_list = []
+        flag = True
+        if (0 == axis):
+            for key in input_list:
+                if flag:
+                    if ('no' != input_df[str(key)][num][0]):
+                        flag = False
+                    else:
+                        res_list.append((key,num))
+                else:
+                    if ('no' != input_df[str(key)][num][0]):
+                        if (self.get_color() != input_df[str(key)][num][1]):
+                            res_list.append((key,num))
+        elif (1 == axis):
+            for key in input_list:
+                if flag:
+                    if ('no' != input_df[str(num)][key][0]):
+                        flag = False
+                    else:
+                        res_list.append((num,key))
+                else:
+                    if ('no' != input_df[str(num)][key][0]):
+                        if (self.get_color() != input_df[str(num)][key][1]):
+                            res_list.append((num,key))
+        else:
+            raise KeyError(axis)
+        return res_list
+    def nextsteps(self,input_df):
+        nextList = []
+        #list_index,list_colum = self.get_col_index(input_df)
+        df = input_df.copy()
+        input_list = list(range(0,self.pos[0]))
+        input_list.reverse()
+        list_pos = self.pos_utl_man(int(self.pos[1]),input_list,df,axis=0)
+        nextList.extend(list_pos)
+
+        input_list = list(range(self.pos[0]+1,self.conf_dict['max_x']+1))
+        list_pos = self.pos_utl_man(int(self.pos[1]),input_list,df,axis=0)
+        nextList.extend(list_pos)
+
+        input_list = list(range(0,self.pos[1]))
+        input_list.reverse()
+        list_pos = self.pos_utl_man(int(self.pos[0]),input_list,df,axis=1)
+        nextList.extend(list_pos)
+
+        input_list = list(range(self.pos[1]+1,self.conf_dict['max_y']+1))
+        list_pos = self.pos_utl_man(int(self.pos[0]),input_list,df,axis=1)
+        nextList.extend(list_pos)
+
+        return nextList
 
 if __name__ == '__main__':
     import sys
