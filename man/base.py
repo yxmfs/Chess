@@ -75,7 +75,7 @@ class BaseMan():
 class BossMan(BaseMan):
     def __init__(self,pos,color):
         BaseMan.__init__(self,pos,color,'boss')
-    def isLegal(self,pos):
+    def isLegal(self,pos,input_df):
         min_x = 3
         max_x = 5
         if self.get_color() == 'r':
@@ -170,6 +170,24 @@ class MinisMan(BaseMan):
 class GuardMan(BaseMan):
     def __init__(self,pos,color):
         BaseMan.__init__(self,pos,color,'guard')
+    def isLegal(self,pos,input_df):
+        min_x = 3
+        max_x = 5
+        if self.get_color() == 'r':
+            min_y = 0
+            max_y = 2
+        if self.get_color() == 'b':
+            min_y = 7
+            max_y = 9
+ 
+        if (pos[0]>max_x) or (pos[0]<min_x):
+            return False
+        elif (pos[1]>max_y) or (pos[1]<min_y):
+            return False
+        elif (self.get_color() == input_df[str(pos[0])][int(pos[1])][1]):
+            return False
+        else:
+            return True
     def nextsteps(self,input_df):
         nextList = []
         tmp_list = [(1,1),(1,-1),(-1,1),(-1,-1)]
@@ -214,6 +232,7 @@ class CannonMan(BaseMan):
                     if ('no' != input_df[str(key)][num][0]):
                         if (self.get_color() != input_df[str(key)][num][1]):
                             res_list.append((key,num))
+                            break
         elif (1 == axis):
             for key in input_list:
                 if flag:
@@ -225,6 +244,7 @@ class CannonMan(BaseMan):
                     if ('no' != input_df[str(num)][key][0]):
                         if (self.get_color() != input_df[str(num)][key][1]):
                             res_list.append((num,key))
+                            break
         else:
             raise KeyError(axis)
         return res_list
