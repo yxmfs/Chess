@@ -17,7 +17,7 @@ class Game():
         print('the status is:\n',self.board.get_status())
         print('its pos :{0},its name :{1}, its color:{2}'.format(bm.pos,bm.get_name(),bm.get_color()))
         print('now it is pos is :{0}'.format(bm.pos))
-        print('the next pos may be :{0}'.format(bm.nextsteps()))
+        print('the next pos may be :{0}'.format(bm.nextsteps(self.board.get_status())))
     def get_log(self,log):
         print(log)
     def init_all_man(self,color):
@@ -91,7 +91,7 @@ class Game():
             self.get_log('can not get select data')
             return None
         self.get_log('now update the pos')
-        if target_pos in select_man.nextsteps():
+        if target_pos in select_man.nextsteps(self.board.get_status()):
             target_data = self.board.find_data(target_pos[0],target_pos[1])
             if self.isMan(target_data):  #target place has a man
                 if target_data[1] != select_data[1]:  #select and target man has different color

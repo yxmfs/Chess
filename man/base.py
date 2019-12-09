@@ -18,10 +18,12 @@ class BaseMan():
         self.__alive = False
     def is_alive(self,):
         return self.__alive 
-    def isLegal(self,pos):
+    def isLegal(self,pos,input_df):
         if (pos[0]>self.conf_dict['max_x']) or (pos[0]<self.conf_dict['min_x']):
             return False
         elif (pos[1]>self.conf_dict['max_y']) or (pos[1]<self.conf_dict['min_y']):
+            return False
+        elif (self.get_color() == input_df[str(pos[0])][int(pos[1])][1]):
             return False
         else:
             return True
@@ -43,23 +45,23 @@ class BaseMan():
         else:
             return False
 
-    def nextsteps(self):
+    def nextsteps(self,input_df):
         nextList = []
         x = self.pos[0] + 1
         y = self.pos[1]
-        if self.isLegal([x,y]):
+        if self.isLegal([x,y],input_df):
             nextList.append([x,y])
         x = self.pos[0]
         y = self.pos[1] + 1
-        if self.isLegal([x,y]):
+        if self.isLegal([x,y],input_df):
             nextList.append([x,y])
         x = self.pos[0] - 1
         y = self.pos[1]
-        if self.isLegal([x,y]):
+        if self.isLegal([x,y],input_df):
             nextList.append([x,y])
         x = self.pos[0]
         y = self.pos[1] - 1
-        if self.isLegal([x,y]):
+        if self.isLegal([x,y],input_df):
             nextList.append([x,y])
         return nextList
     def get_col_index(self,input_df):
@@ -86,6 +88,8 @@ class BossMan(BaseMan):
         if (pos[0]>max_x) or (pos[0]<min_x):
             return False
         elif (pos[1]>max_y) or (pos[1]<min_y):
+            return False
+        elif (self.get_color() == input_df[str(pos[0])][int(pos[1])][1]):
             return False
         else:
             return True
@@ -140,57 +144,57 @@ class CarMan(BaseMan):
 class HorseMan(BaseMan):
     def __init__(self,pos,color):
         BaseMan.__init__(self,pos,color,'horse')
-    def nextsteps(self):
+    def nextsteps(self,input_df):
         nextList = []
         tmp_list = [(1,2),(2,1),(1,-2),(-2,1),
                     (-1,2),(2,-1),(-1,-2),(-2,-1)]
         for key in tmp_list:
             x = self.pos[0] + key[0]
             y = self.pos[1] + key[1]
-            if self.isLegal([x,y]):
+            if self.isLegal([x,y],input_df):
                 nextList.append([x,y])
         return nextList
 class MinisMan(BaseMan):
     def __init__(self,pos,color):
         BaseMan.__init__(self,pos,color,'minister')
-    def nextsteps(self):
+    def nextsteps(self,input_df):
         nextList = []
         tmp_list = [(2,2),(2,-2),(-2,2),(-2,-2)]
         for key in tmp_list:
             x = self.pos[0] + key[0]
             y = self.pos[1] + key[1]
-            if self.isLegal([x,y]):
+            if self.isLegal([x,y],input_df):
                 if not self.isOut([x,y]):
                     nextList.append([x,y])
         return nextList
 class GuardMan(BaseMan):
     def __init__(self,pos,color):
         BaseMan.__init__(self,pos,color,'guard')
-    def nextsteps(self):
+    def nextsteps(self,input_df):
         nextList = []
         tmp_list = [(1,1),(1,-1),(-1,1),(-1,-1)]
         for key in tmp_list:
             x = self.pos[0] + key[0]
             y = self.pos[1] + key[1]
-            if self.isLegal([x,y]):
+            if self.isLegal([x,y],input_df):
                 nextList.append([x,y])
         return nextList
 class SoldierMan(BaseMan):
     def __init__(self,pos,color):
         BaseMan.__init__(self,pos,color,'soldier')
-    def nextsteps(self):
+    def nextsteps(self,input_df):
         nextList = []
         x = self.pos[0]
         tmp_dict = {'r':1,'b':-1}
         y = self.pos[1] + tmp_dict[self.get_color()]
-        if self.isLegal([x,y]):
+        if self.isLegal([x,y],input_df):
             nextList.append([x,y])
         if self.isOut(self.pos):
             tmp_list = [(1,0),(-1,0)]
             for key in tmp_list:
                 x = self.pos[0] + key[0]
                 y = self.pos[1] + key[1]
-                if self.isLegal([x,y]):
+                if self.isLegal([x,y],input_df):
                     nextList.append([x,y])
         return nextList
 class CannonMan(BaseMan):
