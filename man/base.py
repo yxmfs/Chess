@@ -50,19 +50,19 @@ class BaseMan():
         x = self.pos[0] + 1
         y = self.pos[1]
         if self.isLegal([x,y],input_df):
-            nextList.append([x,y])
+            nextList.append((x,y))
         x = self.pos[0]
         y = self.pos[1] + 1
         if self.isLegal([x,y],input_df):
-            nextList.append([x,y])
+            nextList.append((x,y))
         x = self.pos[0] - 1
         y = self.pos[1]
         if self.isLegal([x,y],input_df):
-            nextList.append([x,y])
+            nextList.append((x,y))
         x = self.pos[0]
         y = self.pos[1] - 1
         if self.isLegal([x,y],input_df):
-            nextList.append([x,y])
+            nextList.append((x,y))
         return nextList
     def get_col_index(self,input_df):
         df = input_df.copy()
@@ -146,13 +146,24 @@ class HorseMan(BaseMan):
         BaseMan.__init__(self,pos,color,'horse')
     def nextsteps(self,input_df):
         nextList = []
-        tmp_list = [(1,2),(2,1),(1,-2),(-2,1),
-                    (-1,2),(2,-1),(-1,-2),(-2,-1)]
-        for key in tmp_list:
-            x = self.pos[0] + key[0]
-            y = self.pos[1] + key[1]
-            if self.isLegal([x,y],input_df):
-                nextList.append([x,y])
+        tmp_list = [(1,2),(-1,2),(1,-2),(-1,-2),
+                    (2,1),(2,-1),(-2,1),(-2,-1)]
+        hinders = [(0,1),(0,-1),(1,0),(-1,0)]
+        for num in range(len(hinders)):
+            x_h = self.pos[0] + hinders[num][0]
+            y_h = self.pos[1] + hinders[num][1]
+            if (x_h<int(self.conf_dict['min_x']) or x_h>int(self.conf_dict['max_x']) or
+                y_h<int(self.conf_dict['min_y']) or y_h>int(self.conf_dict['max_y'])):
+                continue
+            elif ('no' == input_df[str(x_h)][y_h][0]):
+                x = self.pos[0] + tmp_list[num*2][0]
+                y = self.pos[1] + tmp_list[num*2][1]
+                if self.isLegal([x,y],input_df):
+                    nextList.append((x,y))
+                x = self.pos[0] + tmp_list[num*2+1][0]
+                y = self.pos[1] + tmp_list[num*2+1][1]
+                if self.isLegal([x,y],input_df):
+                    nextList.append((x,y))
         return nextList
 class MinisMan(BaseMan):
     def __init__(self,pos,color):
@@ -160,12 +171,19 @@ class MinisMan(BaseMan):
     def nextsteps(self,input_df):
         nextList = []
         tmp_list = [(2,2),(2,-2),(-2,2),(-2,-2)]
-        for key in tmp_list:
-            x = self.pos[0] + key[0]
-            y = self.pos[1] + key[1]
-            if self.isLegal([x,y],input_df):
-                if not self.isOut([x,y]):
-                    nextList.append([x,y])
+        hinders = [(1,1),(1,-1),(-1,1),(-1,-1)]
+        for num in range(len(hinders)):
+            x_h = self.pos[0] + hinders[num][0]
+            y_h = self.pos[1] + hinders[num][1]
+            if (x_h<int(self.conf_dict['min_x']) or x_h>int(self.conf_dict['max_x']) or
+                y_h<int(self.conf_dict['min_y']) or y_h>int(self.conf_dict['max_y'])):
+                continue
+            elif ('no' == input_df[str(x_h)][y_h][0]):
+                x = self.pos[0] + tmp_list[num][0]
+                y = self.pos[1] + tmp_list[num][1]
+                if self.isLegal([x,y],input_df):
+                    if not self.isOut([x,y]):
+                        nextList.append((x,y))
         return nextList
 class GuardMan(BaseMan):
     def __init__(self,pos,color):
@@ -195,7 +213,7 @@ class GuardMan(BaseMan):
             x = self.pos[0] + key[0]
             y = self.pos[1] + key[1]
             if self.isLegal([x,y],input_df):
-                nextList.append([x,y])
+                nextList.append((x,y))
         return nextList
 class SoldierMan(BaseMan):
     def __init__(self,pos,color):
@@ -206,14 +224,14 @@ class SoldierMan(BaseMan):
         tmp_dict = {'r':1,'b':-1}
         y = self.pos[1] + tmp_dict[self.get_color()]
         if self.isLegal([x,y],input_df):
-            nextList.append([x,y])
+            nextList.append((x,y))
         if self.isOut(self.pos):
             tmp_list = [(1,0),(-1,0)]
             for key in tmp_list:
                 x = self.pos[0] + key[0]
                 y = self.pos[1] + key[1]
                 if self.isLegal([x,y],input_df):
-                    nextList.append([x,y])
+                    nextList.append((x,y))
         return nextList
 class CannonMan(BaseMan):
     def __init__(self,pos,color):
