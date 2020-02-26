@@ -1,15 +1,10 @@
 import pandas as pd
-from board.fun import conf_reader
+from Chess.board.fun import conf_reader
 
 class BaseBoard():
     def __init__(self,):
         self.__conf_dict = conf_reader('./data/conf.ini','num')
-        t_s = 'no'
-        temp_list = [(t_s,t_s,t_s) for _ in range(self.__conf_dict['max_y']+1)]
-        temp_dict = {}
-        for key in range(self.__conf_dict['max_x']+1):
-            temp_dict[str(key)] = temp_list
-        self.__status = pd.DataFrame(temp_dict)
+        self.clear_data()
         self.__sort_dict = {0:'boss',1:'car',2:'horse'}
     def get_status(self,):
         #print(self.__status.shape)
@@ -18,6 +13,13 @@ class BaseBoard():
         return self.__status[str(x)][y]
     def replace_data(self,x,y,data):
         self.__status[str(x)][y] = data
+    def clear_data(self,):
+        t_s = 'no'
+        temp_list = [(t_s,t_s,t_s) for _ in range(self.__conf_dict['max_y']+1)]
+        temp_dict = {}
+        for key in range(self.__conf_dict['max_x']+1):
+            temp_dict[str(key)] = temp_list
+        self.__status = pd.DataFrame(temp_dict)
     def init_status(self,):
         self.replace_data('0',0, ('car','r',0))
         self.replace_data('8',0, ('car','r',1))

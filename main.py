@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import pandas as pd
-from man import base
-from board.base import BaseBoard
-from board.fun import switch,read_sql_df,save_sql_df
-from man.base import *
+from .man import base
+from .board.base import BaseBoard
+from .board.fun import switch,read_sql_df,save_sql_df
+from .man.base import *
 
 class Game():
     def __init__(self,):
@@ -13,6 +13,12 @@ class Game():
         r_man = self.init_all_man('r')
         self.all_man = {'b':b_man,'r':r_man}
         self.all_name = ['guard','cannon','soldier','car','minister','boss','horse']
+    def restart(self):
+        self.board.clear_data()
+        self.board.init_status()
+        b_man = self.init_all_man('b')
+        r_man = self.init_all_man('r')
+        self.all_man = {'b':b_man,'r':r_man}
     def test_print(self,bm):
         print('the status is:\n',self.board.get_status())
         print('its pos :{0},its name :{1}, its color:{2}'.format(bm.pos,bm.get_name(),bm.get_color()))
@@ -65,12 +71,12 @@ class Game():
     def isOver(self):
         if not self.all_man['r']['boss'][0].is_alive():
             self.get_log('the black man has win!')
-            return True
+            return 'black'
         elif not self.all_man['b']['boss'][0].is_alive():
             self.get_log('the red man has win!')
-            return True
+            return 'red'
         else:
-            return False
+            return 'no'
     def get_man_by_data(self,data):
         try:
             return self.all_man[data[1]][data[0]][data[2]]  #find man class by color, name, number
@@ -87,9 +93,9 @@ class Game():
             return None,None
     def update_pos(self,select_data,select_man,target_pos):
         if select_data == None:
-            self.get_log('can not get select data')
-            return None
-        self.get_log('now update the pos')
+            log = 'can not get select data!'
+            self.get_log(log)
+            return False,log
         if target_pos in select_man.nextsteps(self.board.get_status()):
             target_data = self.board.find_data(target_pos[0],target_pos[1])
             if self.isMan(target_data):  #target place has a man
@@ -97,16 +103,22 @@ class Game():
                     target_man = self.get_man_by_data(target_data)
                     target_man.kill()
                 else:
-                    self.get_log('it is a ilegal target place!')
+                    log = 'you can not eat your own chess!'
+                    self.get_log(log)
+                    return False,log
             self.board.replace_data(target_pos[0],target_pos[1],select_data)
             self.board.replace_data(select_man.pos[0],select_man.pos[1],('no','no','no'))
             select_man.pos = (int(target_pos[0]),int(target_pos[1]))
+            self.get_log('now update the pos')
+            return True,'sucess'
         else:
-            self.get_log('it is a ilegal target place!')
+            log = 'it is a ilegal target place, the target place is not in your nextsteps!'
+            self.get_log(log)
+            return False,log
 
 def main():
     game = Game()
-    while (not game.isOver()):
+    while (game.isOver() == 'no'):
         x = input("输入x值")
         y = input("输入y值")
         target_x = input("输入目标x值")

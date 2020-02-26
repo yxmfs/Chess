@@ -1,5 +1,5 @@
 # coding=utf-8
-from board.fun import conf_reader
+from Chess.board.fun import conf_reader
 class BaseMan():
     def __init__(self,pos,color,name):
         self.pos = (int(pos[0]),int(pos[1]))
