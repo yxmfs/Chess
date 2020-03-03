@@ -84,7 +84,7 @@ class BossMan(BaseMan):
         if self.get_color() == 'b':
             min_y = 7
             max_y = 9
- 
+
         if (pos[0]>max_x) or (pos[0]<min_x):
             return False
         elif (pos[1]>max_y) or (pos[1]<min_y):
@@ -93,7 +93,32 @@ class BossMan(BaseMan):
             return False
         else:
             return True
- 
+    def pos_utl_man(self,input_list,n):
+        res = {'flag':False,'pos':(0,0)}
+        for index,key in enumerate(input_list):
+            if 'no' == key[0]:
+                continue
+            elif 'boss' == key[0]:
+                res['flag'] = True
+                res['pos'] = (self.pos[0],self.pos[1]+(index+1)*n)
+                break
+            else:
+                break
+        return res
+    def nextsteps(self,input_df):
+        nextList = BaseMan.nextsteps(self,input_df)
+        if self.get_color() == 'r':
+            n = 1
+            input_list = list(input_df[str(self.pos[0])][int(self.pos[1])+1:input_df.shape[0]])
+        elif self.get_color() == 'b':
+            n = -1
+            input_list = list(input_df[str(self.pos[0])][0:int(self.pos[1])])
+            input_list.reverse()
+        res = self.pos_utl_man(input_list,n)
+        if res['flag'] == True:
+            nextList.append(res['pos'])
+        return nextList
+
 class CarMan(BaseMan):
     def __init__(self,pos,color):
         BaseMan.__init__(self,pos,color,'car')
